@@ -3,100 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Generator - Crie Memes Online</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <title>Meme Generator - Crie Memes Incriveis</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <header class="header">
         <div class="header-content">
-            <h1>Meme Generator</h1>
-            <p>O Melhor Gerador de Memes Online</p>
+            <h1><i class="fas fa-laugh-squint"></i> Meme Generator</h1>
+            <p>Crie memes incriveis — igual ao imgflip, mas seu!</p>
         </div>
     </header>
 
     <div class="main-wrapper">
         <!-- SIDEBAR ESQUERDO: TEMPLATES -->
         <aside class="sidebar-left">
-            <h2>Escolha um Template</h2>
-            <div class="template-grid">
-                <div class="template-item" data-url="https://i.imgflip.com/1bij.jpg" title="One Does Not Simply">
-                    <img src="https://i.imgflip.com/1bij.jpg" alt="One Does Not Simply">
-                </div>
-                <div class="template-item" data-url="https://i.imgflip.com/26am.jpg" title="Grumpy Cat">
-                    <img src="https://i.imgflip.com/26am.jpg" alt="Grumpy Cat">
-                </div>
-                <div class="template-item" data-url="https://i.imgflip.com/1ur9b0.jpg" title="Distracted Boyfriend">
-                    <img src="https://i.imgflip.com/1ur9b0.jpg" alt="Distracted Boyfriend">
-                </div>
-                <div class="template-item" data-url="https://i.imgflip.com/2wifvo.jpg" title="Drake">
-                    <img src="https://i.imgflip.com/2wifvo.jpg" alt="Drake">
-                </div>
-                <div class="template-item" data-url="https://i.imgflip.com/335p7u.jpg" title="Woman Yelling at Cat">
-                    <img src="https://i.imgflip.com/335p7u.jpg" alt="Woman Yelling at Cat">
-                </div>
-                <div class="template-item" data-url="https://i.imgflip.com/261o3a.jpg" title="Two Buttons">
-                    <img src="https://i.imgflip.com/261o3a.jpg" alt="Two Buttons">
-                </div>
+            <h2><i class="fas fa-images"></i> Templates</h2>
+            <div class="search-box">
+                <input type="text" id="templateSearch" placeholder="Buscar template...">
+            </div>
+            <div class="template-grid" id="templateGrid">
+                <!-- Templates loaded via JS -->
             </div>
 
             <div class="upload-section">
-                <h3>Ou Envie sua Imagem</h3>
+                <h3>Ou envie sua imagem</h3>
                 <label for="imageUpload" class="upload-btn">
-                    Escolher Arquivo
+                    <i class="fas fa-upload"></i> Escolher Arquivo
                     <input type="file" id="imageUpload" accept="image/*">
                 </label>
+                <div class="url-upload">
+                    <input type="text" id="imageUrl" placeholder="Ou cole a URL da imagem...">
+                    <button id="loadUrlBtn" title="Carregar URL"><i class="fas fa-arrow-right"></i></button>
+                </div>
             </div>
         </aside>
 
         <!-- CANVAS CENTRAL -->
         <main class="canvas-area">
-            <div id="canvas-container" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"></div>
-            <button id="downloadBtn" class="btn-generate">Gerar e Baixar Meme</button>
+            <div class="canvas-toolbar">
+                <button class="tool-btn active" data-tool="select" title="Selecionar/Mover texto">
+                    <i class="fas fa-mouse-pointer"></i>
+                </button>
+                <button class="tool-btn" data-tool="draw" title="Desenhar">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="tool-btn" id="addTextBtn" title="Adicionar caixa de texto">
+                    <i class="fas fa-plus"></i> Texto
+                </button>
+                <button class="tool-btn" id="undoBtn" title="Desfazer">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="tool-btn" id="redoBtn" title="Refazer">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <div class="toolbar-separator"></div>
+                <label class="tool-btn" title="Cor do desenho">
+                    <i class="fas fa-palette"></i>
+                    <input type="color" id="drawColor" value="#ff0000" class="hidden-color">
+                </label>
+                <div class="draw-size-control" id="drawSizeControl" style="display:none;">
+                    <label>Espessura:</label>
+                    <input type="range" id="drawSize" min="1" max="20" value="3">
+                </div>
+            </div>
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <canvas id="memeCanvas"></canvas>
+                <div class="canvas-placeholder" id="canvasPlaceholder">
+                    <i class="fas fa-image"></i>
+                    <p>Escolha um template ou envie uma imagem para comecar</p>
+                </div>
+                <!-- Text box overlays rendered here -->
+                <div id="textBoxOverlays"></div>
+            </div>
+            <div class="canvas-actions">
+                <button id="downloadBtn" class="btn-generate">
+                    <i class="fas fa-download"></i> Gerar e Baixar Meme
+                </button>
+                <button id="copyBtn" class="btn-copy" title="Copiar para clipboard">
+                    <i class="fas fa-copy"></i> Copiar
+                </button>
+            </div>
         </main>
 
         <!-- SIDEBAR DIREITO: CONTROLES -->
         <aside class="sidebar-right">
-            <h2>Controles</h2>
+            <h2><i class="fas fa-sliders-h"></i> Controles</h2>
 
-            <div class="control-section">
-                <label>Texto Superior</label>
-                <input type="text" id="topText" placeholder="Digite aqui" maxlength="50">
-            </div>
+            <div id="textControls">
+                <p class="hint-text" id="noTextHint">Adicione texto clicando em "+ Texto" ou selecione uma caixa de texto existente.</p>
 
-            <div class="control-section">
-                <label>Texto Inferior</label>
-                <input type="text" id="bottomText" placeholder="Digite aqui" maxlength="50">
-            </div>
+                <div id="activeTextControls" style="display:none;">
+                    <div class="control-section">
+                        <label>Texto</label>
+                        <textarea id="activeText" rows="2" placeholder="Digite o texto do meme..."></textarea>
+                    </div>
 
-            <div class="control-row">
-                <div class="control-section flex-1">
-                    <label>Cor</label>
-                    <input type="color" id="textColor" value="#ffffff">
+                    <div class="control-row">
+                        <div class="control-section flex-1">
+                            <label>Cor do Texto</label>
+                            <input type="color" id="textColor" value="#ffffff">
+                        </div>
+                        <div class="control-section flex-1">
+                            <label>Cor do Contorno</label>
+                            <input type="color" id="strokeColor" value="#000000">
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <div class="control-section flex-1">
+                            <label>Tamanho <span id="textSizeVal">40</span>px</label>
+                            <input type="range" id="textSizeRange" min="12" max="120" value="40">
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <div class="control-section flex-1">
+                            <label>Contorno <span id="strokeSizeVal">3</span>px</label>
+                            <input type="range" id="strokeSize" min="0" max="10" value="3">
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <label>Fonte</label>
+                        <select id="fontFamily">
+                            <option value="Impact">Impact</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Comic Sans MS">Comic Sans MS</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+
+                    <div class="control-section">
+                        <label>Alinhamento</label>
+                        <div class="align-buttons">
+                            <button class="align-btn active" data-align="center"><i class="fas fa-align-center"></i></button>
+                            <button class="align-btn" data-align="left"><i class="fas fa-align-left"></i></button>
+                            <button class="align-btn" data-align="right"><i class="fas fa-align-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <label>Estilo</label>
+                        <div class="style-buttons">
+                            <button class="style-btn" data-style="bold" title="Negrito"><i class="fas fa-bold"></i></button>
+                            <button class="style-btn" data-style="italic" title="Italico"><i class="fas fa-italic"></i></button>
+                            <button class="style-btn" data-style="uppercase" title="MAIUSCULAS"><i class="fas fa-font"></i> AA</button>
+                            <button class="style-btn" data-style="shadow" title="Sombra"><i class="fas fa-clone"></i></button>
+                        </div>
+                    </div>
+
+                    <button id="deleteTextBtn" class="btn-delete"><i class="fas fa-trash"></i> Remover Texto</button>
                 </div>
-                <div class="control-section flex-1">
-                    <label>Tamanho</label>
-                    <input type="range" id="textSize" min="15" max="80" value="40">
-                </div>
             </div>
-
-            <div class="control-section">
-                <label>Fonte</label>
-                <select id="fontFamily">
-                    <option value="Impact">Impact</option>
-                    <option value="Arial">Arial</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Courier New">Courier New</option>
-                </select>
-            </div>
-
-            <button id="resetBtn" class="btn-reset">Limpar Tudo</button>
 
             <hr>
 
-            <h3>Meus Memes</h3>
-            <button id="saveMemeBtn" class="btn-save">Salvar Meme</button>
-            <ul id="memeList" class="meme-list"></ul>
+            <button id="resetBtn" class="btn-reset"><i class="fas fa-eraser"></i> Limpar Tudo</button>
         </aside>
     </div>
 
