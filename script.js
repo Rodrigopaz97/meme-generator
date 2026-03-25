@@ -8,10 +8,13 @@ let fontFamily = 'Impact';
 let savedMemes = [];
 
 function setup() {
-    p5Canvas = createCanvas(600, 600);
-    p5Canvas.parent('canvas-container');
-    loadSavedMemes();
-    setupEventListeners();
+    let container = document.getElementById('canvas-container');
+    if (container) {
+        p5Canvas = createCanvas(600, 600);
+        p5Canvas.parent('canvas-container');
+        loadSavedMemes();
+        setupEventListeners();
+    }
 }
 
 function draw() {
@@ -166,9 +169,11 @@ function loadTemplateImage(url) {
     loadImage(url, 
         (loadedImg) => {
             img = loadedImg;
+            console.log('✓ Imagem carregada:', url);
         },
         (error) => {
-            console.error('Erro ao carregar template:', url, error);
+            console.error('Erro ao carregar imagem:', url, error);
+            alert('⚠️ Erro ao carregar template. Por favor, envie sua própria imagem.');
         }
     );
 }
