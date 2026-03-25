@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Meme Generator</h1>
+    <div id="controls">
+        <div>
+            <label for="imageUpload">Upload Image:</label>
+            <input type="file" id="imageUpload" accept="image/*">
+        </div>
+        <div>
+            <label for="topText">Top Text:</label>
+            <input type="text" id="topText" placeholder="Enter top text">
+        </div>
+        <div>
+            <label for="bottomText">Bottom Text:</label>
+            <input type="text" id="bottomText" placeholder="Enter bottom text">
+        </div>
+        <div>
+            <label for="textColor">Text Color:</label>
+            <input type="color" id="textColor" value="#ffffff">
+        </div>
+        <div>
+            <label for="textSize">Text Size:</label>
+            <input type="range" id="textSize" min="10" max="100" value="30">
+            <span id="sizeValue">30</span>
+        </div>
+        <div>
+            <label for="fontFamily">Font Family:</label>
+            <select id="fontFamily">
+                <option value="Arial">Arial</option>
+                <option value="Impact">Impact</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+            </select>
+        </div>
+        <div>
+            <button id="saveBtn">Save Meme</button>
+        </div>
+        <div id="bonus-controls">
+            <h3>Bonus Features</h3>
+            <div>
+                <label for="drawMode">Draw Mode:</label>
+                <select id="drawMode">
+                    <option value="none">None</option>
+                    <option value="circle">Circle</option>
+                    <option value="rectangle">Rectangle</option>
+                    <option value="free">Free Draw</option>
+                </select>
+            </div>
+            <div>
+                <button id="clearDraw">Clear Drawings</button>
+            </div>
+            <div>
+                <button id="shareTwitter">Share on Twitter</button>
+                <button id="shareReddit">Share on Reddit</button>
+                <button id="shareFacebook">Share on Facebook</button>
+            </div>
+        </div>
+    </div>
+    <div id="canvas-container">
+        <div id="canvas-parent"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
