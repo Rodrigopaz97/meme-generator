@@ -1,194 +1,188 @@
 let img = null;
-let canvas;
+let p5Canvas = null;
 let topText = '';
 let bottomText = '';
 let textColor = '#ffffff';
 let textSize = 40;
 let fontFamily = 'Impact';
-let topTextY = 60;
-let bottomTextY = 0;
 let savedMemes = [];
 
 function setup() {
-    let container = document.getElementById('p5-container');
-    canvas = createCanvas(500, 500);
-    canvas.parent(container);
-    
+    p5Canvas = createCanvas(600, 600);
+    p5Canvas.parent('canvas-container');
     loadSavedMemes();
     setupEventListeners();
 }
 
 function draw() {
     background(240);
-    
     if (img) {
-        let scale = Math.min(width / img.width, height / img.height);
+        let maxWidth = 580;
+        let maxHeight = 580;
+        let scale = Math.min(maxWidth / img.width, maxHeight / img.height);
         let w = img.width * scale;
         let h = img.height * scale;
         let x = (width - w) / 2;
         let y = (height - h) / 2;
         image(img, x, y, w, h);
-        
         drawMemeText(x, y, w, h);
     } else {
-        fill(150);
+        fill(100);
         textAlign(CENTER, CENTER);
-        textSize(18);
-        text('Escolha um template ou envie uma imagem', width / 2, height / 2);
+        textSize(16);
+        text('Carregue uma imagem ou escolha um template', width / 2, height / 2);
     }
 }
 
 function drawMemeText(imgX, imgY, imgW, imgH) {
-    if (!topText && !bottomText) return;
-    
     textAlign(CENTER);
     textFont(fontFamily);
     textSize(textSize);
     
     if (topText) {
-        let topY = imgY + 40;
-        
         stroke(0);
         strokeWeight(4);
-        fill(0, 0, 0, 100);
-        text(topText.toUpperCase(), width / 2, topY);
-        
         fill(textColor);
-        stroke(0);
-        strokeWeight(3);
-        text(topText.toUpperCase(), width / 2, topY);
-        
-        topTextY = topY;
+        text(topText.toUpperCase(), width / 2, imgY + 50);
     }
     
     if (bottomText) {
-        let bottomY = imgY + imgH - 30;
-        
         stroke(0);
         strokeWeight(4);
-        fill(0, 0, 0, 100);
-        text(bottomText.toUpperCase(), width / 2, bottomY);
-        
         fill(textColor);
-        stroke(0);
-        strokeWeight(3);
-        text(bottomText.toUpperCase(), width / 2, bottomY);
-        
-        bottomTextY = bottomY;
+        text(bottomText.toUpperCase(), width / 2, imgY + imgH - 30);
     }
-    
-    noStroke();
 }
 
 function setupEventListeners() {
-    document.querySelectorAll('.template-card').forEach(card => {
-        card.addEventListener('click', function() {
-            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            let url = this.dataset.url;
+    // Template selection
+    const templateItems = document.querySelectorAll('.template-item');
+    templateItems.forEach(item => {
+        item.addEventListener('click', () => {
+            templateItems.forEach(t => t.classList.remove('active'));
+            item.classList.add('active');
+            const url = item.dataset.url;
             loadTemplateImage(url);
         });
     });
-    
-    document.getElementById('imageUpload').addEventListener('change', function(e) {
-        if (e.target.files[0]) {
-            let reader = new FileReader();
+
+    // Image upload
+    const imageUpload = document.getElementById('imageUpload');
+    imageUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
             reader.onload = (event) => {
                 loadImage(event.target.result, (loadedImg) => {
                     img = loadedImg;
                 });
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         }
     });
-    
-    document.getElementById('topText').addEventListener('input', function() {
-        topText = this.value;
+
+    // Text inputs
+    document.getElementById('topText').addEventListener('input', (e) => {
+        topText = e.target.value;
     });
-    
-    document.getElementById('bottomText').addEventListener('input', function() {
-        bottomText = this.value;
+
+    document.getElementById('bottomText').addEventListener('input', (e) => {
+        bottomText = e.target.value;
     });
-    
-    document.getElementById('textColor').addEventListener('input', function() {
-        textColor = this.value;
-        document.getElementById('colorHex').textContent = this.value.toUpperCase();
+
+    // Color input
+    document.getElementById('textColor').addEventListener('input', (e) => {
+        textColor = e.target.value;
     });
-    
-    document.getElementById('textSize').addEventListener('input', function() {
-        textSize = parseInt(this.value);
-        document.getElementById('sizeValue').textContent = this.value;
+
+    // Size input
+    document.getElementById('textSize').addEventListener('input', (e) => {
+        textSize = parseInt(e.target.value);
     });
-    
-    document.getElementById('fontFamily').addEventListener('change', function() {
-        fontFamily = this.value;
+
+    // Font input
+    document.getElementById('fontFamily').addEventListener('change', (e) => {
+        fontFamily = e.target.value;
     });
-    
-    document.getElementById('downloadBtn').addEventListener('click', function() {
-        if (!img) {
-            alert('Escolha uma imagem primeiro!');
-            return;
+
+    // Download button
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+        if (img) {
+            saveCanvas(p5Canvas, 'meme');
+        } else {
+            alert('Por favor, carregue uma imagem primeiro!');
         }
-        saveCanvas(canvas, 'meme');
     });
-    
-    document.getElementById('resetBtn').addEventListener('click', function() {
+
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        img = null;
         topText = '';
         bottomText = '';
         textColor = '#ffffff';
         textSize = 40;
         fontFamily = 'Impact';
-        img = null;
         
+        document.getElementById('imageUpload').value = '';
         document.getElementById('topText').value = '';
         document.getElementById('bottomText').value = '';
         document.getElementById('textColor').value = '#ffffff';
         document.getElementById('textSize').value = '40';
         document.getElementById('fontFamily').value = 'Impact';
-        document.getElementById('colorHex').textContent = '#FFFFFF';
-        document.getElementById('sizeValue').textContent = '40';
-        document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+        
+        // Remove active state from templates
+        document.querySelectorAll('.template-item').forEach(t => t.classList.remove('active'));
     });
-    
-    document.getElementById('saveMemeBtn').addEventListener('click', function() {
-        if (!img) {
-            alert('Crie um meme antes de salvar!');
-            return;
+
+    // Save meme button
+    document.getElementById('saveMemeBtn').addEventListener('click', () => {
+        if (img && (topText || bottomText)) {
+            const dataUrl = p5Canvas.canvas.toDataURL();
+            const meme = {
+                id: Date.now(),
+                image: dataUrl,
+                topText,
+                bottomText,
+                textColor,
+                textSize,
+                fontFamily
+            };
+            
+            savedMemes.push(meme);
+            if (savedMemes.length > 20) {
+                savedMemes = savedMemes.slice(-20);
+            }
+            
+            persistSavedMemes();
+            renderSavedMemes();
+            alert('Meme salvo com sucesso!');
+        } else {
+            alert('Carregue uma imagem e adicione algum texto!');
         }
-        
-        let meme = {
-            id: Date.now(),
-            title: `${topText || 'Sem título'} / ${bottomText || ''}`,
-            imageData: canvas.canvas.toDataURL(),
-            savedAt: new Date().toLocaleString()
-        };
-        
-        savedMemes.unshift(meme);
-        if (savedMemes.length > 20) savedMemes.pop();
-        persistSavedMemes();
-        renderSavedMemes();
-        alert('✅ Meme salvo com sucesso!');
     });
 }
 
 function loadTemplateImage(url) {
-    loadImage(url, (loadedImg) => {
-        img = loadedImg;
-    }, () => {
-        alert('Erro ao carregar template. Tente importar uma imagem.');
-    });
+    loadImage(url, 
+        (loadedImg) => {
+            img = loadedImg;
+        },
+        (error) => {
+            console.error('Erro ao carregar template:', url, error);
+        }
+    );
 }
 
 function loadSavedMemes() {
-    let stored = localStorage.getItem('memeDB');
+    const stored = localStorage.getItem('memeDB');
     if (stored) {
         try {
             savedMemes = JSON.parse(stored);
-            renderSavedMemes();
         } catch (e) {
-            console.error('Erro ao carregar memes:', e);
+            savedMemes = [];
         }
     }
+    renderSavedMemes();
 }
 
 function persistSavedMemes() {
@@ -196,47 +190,51 @@ function persistSavedMemes() {
 }
 
 function renderSavedMemes() {
-    let list = document.getElementById('memeList');
-    list.innerHTML = '';
+    const memeList = document.getElementById('memeList');
+    memeList.innerHTML = '';
     
-    if (savedMemes.length === 0) {
-        list.innerHTML = '<li style=\"text-align: center; padding: 20px; color: #999;\">Nenhum meme salvo ainda</li>';
-        return;
-    }
-    
-    savedMemes.forEach(meme => {
-        let li = document.createElement('li');
+    savedMemes.forEach((meme) => {
+        const li = document.createElement('li');
         
-        let img_thumb = document.createElement('img');
-        img_thumb.src = meme.imageData;
+        const imgEl = document.createElement('img');
+        imgEl.src = meme.image;
         
-        let info = document.createElement('div');
-        info.style.flex = '1';
-        info.style.fontSize = '13px';
-        info.innerHTML = `<div style=\"font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">${meme.title}</div><div style=\"color: #999; font-size: 11px;\">${meme.savedAt}</div>`;
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.style.display = 'flex';
+        buttonsDiv.style.gap = '4px';
         
-        let loadBtn = document.createElement('button');
-        loadBtn.textContent = 'Carrega';
-        loadBtn.onclick = () => {
-            loadImage(meme.imageData, (loadedImg) => {
+        const loadBtn = document.createElement('button');
+        loadBtn.textContent = 'Carregar';
+        loadBtn.addEventListener('click', () => {
+            topText = meme.topText;
+            bottomText = meme.bottomText;
+            textColor = meme.textColor;
+            textSize = meme.textSize;
+            fontFamily = meme.fontFamily;
+            
+            document.getElementById('topText').value = topText;
+            document.getElementById('bottomText').value = bottomText;
+            document.getElementById('textColor').value = textColor;
+            document.getElementById('textSize').value = textSize;
+            document.getElementById('fontFamily').value = fontFamily;
+            
+            loadImage(meme.image, (loadedImg) => {
                 img = loadedImg;
             });
-        };
+        });
         
-        let deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Deletado';
-        deleteBtn.style.background = '#e74c3c';
-        deleteBtn.style.marginLeft = '4px';
-        deleteBtn.onclick = () => {
-            savedMemes = savedMemes.filter(m => m.id !== meme.id);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Deletar';
+        deleteBtn.addEventListener('click', () => {
+            savedMemes = savedMemes.filter((m) => m.id !== meme.id);
             persistSavedMemes();
             renderSavedMemes();
-        };
+        });
         
-        li.appendChild(img_thumb);
-        li.appendChild(info);
-        li.appendChild(loadBtn);
-        li.appendChild(deleteBtn);
-        list.appendChild(li);
+        li.appendChild(imgEl);
+        buttonsDiv.appendChild(loadBtn);
+        buttonsDiv.appendChild(deleteBtn);
+        li.appendChild(buttonsDiv);
+        memeList.appendChild(li);
     });
 }

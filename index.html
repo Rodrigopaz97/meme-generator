@@ -3,109 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Generator - Crie memes incríveis</title>
+    <title>Meme Generator - Crie Memes Online</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="navbar">
-        <div class="navbar-content">
-            <h1 class="logo">🎨 Meme Generator</h1>
-            <p class="tagline">Crie memes em tempo real</p>
+    <header class="header">
+        <div class="header-content">
+            <h1>Meme Generator</h1>
+            <p>O Melhor Gerador de Memes Online</p>
         </div>
-    </div>
+    </header>
 
-    <div class="container">
-        <!-- PAINEL ESQUERDO: CONTROLES -->
-        <aside class="control-panel">
-            <div class="section">
-                <h2>Escolha um Template</h2>
-                <div class="templates-grid">
-                    <div class="template-card" data-url="https://i.imgflip.com/1bij.jpg" title="One Does Not Simply">
-                        <img src="https://i.imgflip.com/1bij.jpg" alt="One Does Not Simply">
-                    </div>
-                    <div class="template-card" data-url="https://i.imgflip.com/26am.jpg" title="Grumpy Cat">
-                        <img src="https://i.imgflip.com/26am.jpg" alt="Grumpy Cat">
-                    </div>
-                    <div class="template-card" data-url="https://i.imgflip.com/1ur9b0.jpg" title="Distracted Boyfriend">
-                        <img src="https://i.imgflip.com/1ur9b0.jpg" alt="Distracted Boyfriend">
-                    </div>
-                    <div class="template-card" data-url="https://i.imgflip.com/2wifvo.jpg" title="Drake">
-                        <img src="https://i.imgflip.com/2wifvo.jpg" alt="Drake">
-                    </div>
+    <div class="main-wrapper">
+        <!-- SIDEBAR ESQUERDO: TEMPLATES -->
+        <aside class="sidebar-left">
+            <h2>Escolha um Template</h2>
+            <div class="template-grid">
+                <div class="template-item" data-url="https://i.imgflip.com/1bij.jpg">
+                    <img src="https://i.imgflip.com/1bij.jpg" alt="One Does Not Simply">
+                </div>
+                <div class="template-item" data-url="https://i.imgflip.com/26am.jpg">
+                    <img src="https://i.imgflip.com/26am.jpg" alt="Grumpy Cat">
+                </div>
+                <div class="template-item" data-url="https://i.imgflip.com/1ur9b0.jpg">
+                    <img src="https://i.imgflip.com/1ur9b0.jpg" alt="Distracted Boyfriend">
+                </div>
+                <div class="template-item" data-url="https://i.imgflip.com/2wifvo.jpg">
+                    <img src="https://i.imgflip.com/2wifvo.jpg" alt="Drake">
+                </div>
+                <div class="template-item" data-url="https://i.imgflip.com/335p7u.jpg">
+                    <img src="https://i.imgflip.com/335p7u.jpg" alt="Woman Yelling at Cat">
+                </div>
+                <div class="template-item" data-url="https://i.imgflip.com/261o3a.jpg">
+                    <img src="https://i.imgflip.com/261o3a.jpg" alt="Two Buttons">
                 </div>
             </div>
 
-            <div class="divider"></div>
-
-            <div class="section">
-                <h2>Ou Envie uma Imagem</h2>
+            <div class="upload-section">
+                <h3>Ou Envie sua Imagem</h3>
                 <label for="imageUpload" class="upload-btn">
-                    <span>📤 Escolher Arquivo</span>
+                    Escolher Arquivo
                     <input type="file" id="imageUpload" accept="image/*">
                 </label>
             </div>
+        </aside>
 
-            <div class="divider"></div>
+        <!-- CANVAS CENTRAL -->
+        <main class="canvas-area">
+            <div id="canvas-container"></div>
+            <button id="downloadBtn" class="btn-generate">Gerar e Baixar Meme</button>
+        </main>
 
-            <div class="section">
-                <h2>Texto Superior</h2>
-                <input type="text" id="topText" placeholder="Digite o texto superior" maxlength="50">
+        <!-- SIDEBAR DIREITO: CONTROLES -->
+        <aside class="sidebar-right">
+            <h2>Controles</h2>
+
+            <div class="control-section">
+                <label>Texto Superior</label>
+                <input type="text" id="topText" placeholder="Digite aqui" maxlength="50">
             </div>
 
-            <div class="section">
-                <h2>Texto Inferior</h2>
-                <input type="text" id="bottomText" placeholder="Digite o texto inferior" maxlength="50">
+            <div class="control-section">
+                <label>Texto Inferior</label>
+                <input type="text" id="bottomText" placeholder="Digite aqui" maxlength="50">
             </div>
 
-            <div class="section">
-                <h2>Cor do Texto</h2>
-                <div class="color-picker-group">
+            <div class="control-row">
+                <div class="control-section flex-1">
+                    <label>Cor</label>
                     <input type="color" id="textColor" value="#ffffff">
-                    <span id="colorHex">#FFFFFF</span>
                 </div>
-            </div>
-
-            <div class="section">
-                <h2>Tamanho</h2>
-                <div class="slider-group">
+                <div class="control-section flex-1">
+                    <label>Tamanho</label>
                     <input type="range" id="textSize" min="15" max="80" value="40">
-                    <span id="sizeValue">40</span>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>Fonte</h2>
+            <div class="control-section">
+                <label>Fonte</label>
                 <select id="fontFamily">
-                    <option value="Impact">Impact (Padrão)</option>
+                    <option value="Impact">Impact</option>
                     <option value="Arial">Arial</option>
                     <option value="Georgia">Georgia</option>
                     <option value="Courier New">Courier New</option>
-                    <option value="Comic Sans MS">Comic Sans MS</option>
                 </select>
             </div>
 
-            <div class="divider"></div>
+            <button id="resetBtn" class="btn-reset">Limpar Tudo</button>
 
-            <div class="action-buttons">
-                <button id="downloadBtn" class="btn btn-primary">⬇️ Baixar PNG</button>
-                <button id="resetBtn" class="btn btn-secondary">🔄 Limpar</button>
-            </div>
+            <hr>
+
+            <h3>Meus Memes</h3>
+            <button id="saveMemeBtn" class="btn-save">Salvar Meme</button>
+            <ul id="memeList" class="meme-list"></ul>
         </aside>
-
-        <!-- PAINEL DIREITO: PREVIEW -->
-        <main class="canvas-wrapper">
-            <div class="canvas-container">
-                <div id="p5-container"></div>
-                <p class="canvas-hint">Clique no texto para arrastar • Use os controles para editar</p>
-            </div>
-
-            <div class="saved-memes-section">
-                <h3>📚 Meus Memes Salvos</h3>
-                <button id="saveMemeBtn" class="btn btn-small">💾 Salvar Meme Atual</button>
-                <ul id="memeList" class="meme-list"></ul>
-            </div>
-        </main>
     </div>
 
     <script src="script.js"></script>
