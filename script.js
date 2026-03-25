@@ -12,13 +12,18 @@ function setup() {
     if (container) {
         p5Canvas = createCanvas(600, 600);
         p5Canvas.parent('canvas-container');
-        loadSavedMemes();
-        setupEventListeners();
+        
+        // Delay para garantir DOM pronto
+        setTimeout(() => {
+            loadSavedMemes();
+            setupEventListeners();
+        }, 100);
     }
 }
 
 function draw() {
     background(240);
+    
     if (img) {
         let maxWidth = 580;
         let maxHeight = 580;
@@ -27,13 +32,19 @@ function draw() {
         let h = img.height * scale;
         let x = (width - w) / 2;
         let y = (height - h) / 2;
+        
+        // Desenhar a imagem
         image(img, x, y, w, h);
+        
+        // Desenhar o texto sobre a imagem
         drawMemeText(x, y, w, h);
     } else {
-        fill(100);
+        // Mensagem quando nenhuma imagem está carregada
+        fill(150);
         textAlign(CENTER, CENTER);
         textSize(16);
-        text('Carregue uma imagem ou escolha um template', width / 2, height / 2);
+        textFont('Arial');
+        text('Escolha um template ou envie uma imagem', width / 2, height / 2);
     }
 }
 
@@ -166,14 +177,27 @@ function setupEventListeners() {
 }
 
 function loadTemplateImage(url) {
-    loadImage(url, 
+    // Usar corsproxy.io como fallback para CORS
+    const corsUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    
+    loadImage(corsUrl, 
         (loadedImg) => {
             img = loadedImg;
-            console.log('✓ Imagem carregada:', url);
+            console.log('✓ Template carregado:', url);
         },
         (error) => {
-            console.error('Erro ao carregar imagem:', url, error);
-            alert('⚠️ Erro ao carregar template. Por favor, envie sua própria imagem.');
+            console.error('Erro ao carregar template:', url, error);
+            // Fallback: tentar a URL original
+            loadImage(url,
+                (loadedImg) => {
+                    img = loadedImg;
+                    console.log('✓ Imagem carregada (sem proxy)');
+                },
+                (err2) => {
+                    console.error('Falha completa:', err2);
+                    alert('⚠️ Não foi possível carregar este template. Envie sua própria imagem.');
+                }
+            );
         }
     );
 }
