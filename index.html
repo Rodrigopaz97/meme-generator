@@ -43,6 +43,26 @@
         </div>
         <div>
             <button id="saveBtn">Save Meme</button>
+            <button id="saveDbBtn" type="button">Save Meme to Library</button>
+        </div>
+        <div>
+            <label for="topTextX">Top X:</label>
+            <input type="number" id="topTextX" value="0">
+            <label for="topTextY">Top Y:</label>
+            <input type="number" id="topTextY" value="50">
+        </div>
+        <div>
+            <label for="bottomTextX">Bottom X:</label>
+            <input type="number" id="bottomTextX" value="0">
+            <label for="bottomTextY">Bottom Y:</label>
+            <input type="number" id="bottomTextY" value="350">
+        </div>
+        <div id="preview-msg" style="margin-bottom: 10px; color: #333;">
+            Live preview is shown on the canvas below. Drag text in the canvas or update coordinates above.
+        </div>
+        <div id="saved-memes" style="margin-top:20px;">
+            <h3>Saved Memes Library</h3>
+            <ul id="memeList"></ul>
         </div>
         <div id="bonus-controls">
             <h3>Bonus Features</h3>

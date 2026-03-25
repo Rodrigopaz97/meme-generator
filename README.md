@@ -21,7 +21,14 @@ A simple web-based meme generator built with p5.js.
 5. Drag text to reposition.
 6. Use drawing tools if desired.
 7. Click "Save Meme" to download the image.
-8. Use share buttons to share on social media.
+8. Click "Save Meme to Library" to persist in local browser database (mini DB).
+9. Use share buttons to share on social media.
+
+## Library and Preview
+
+- After uploading an image, live preview is on canvas. You can drag text or use coordinate fields for exact placement.
+- Saved memes are stored in browser localStorage and shown in the "Saved Memes Library" list.
+- Use "Load" in the library to restore a meme state for editing.
 
 ## Technologies Used
 
